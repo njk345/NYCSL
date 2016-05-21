@@ -99,7 +99,7 @@ $(function() {
 			}
 		},
 		render: function() {
-			var curve = 0.0; // curve uniformly pushes up avg to 87
+			var curve = 0; // curve uniformly pushes up avg to 87
 			this.submissions.forEach(function(submission) {
 				curve += parseInt(submission.score);
 			}); 
@@ -110,7 +110,7 @@ $(function() {
 			for(var a = 0; a < this.submissions.length; a++) {
 				var user = this.submissions[a].user;
 				var score = this.submissions[a].score;
-				this.$table.append("<tbody id='user" + user.userID + "'><tr><th scope='row'>"+(a+1)+"</th><td><a href='student.php?userID="+user.userID+"'>"+user.firstName+" "+user.lastName+"</a></td><td><a href='school.php?schoolName="+user.schoolName+"'>"+user.schoolName+"</a></td><td><a class='matchDrop' title='"+(parseInt(score)+curve)+"' userID='"+user.userID+"' href='#'>"+score+"</a></td></tr></tbody>");
+				this.$table.append("<tbody id='user" + user.userID + "'><tr><th scope='row'>"+(a+1)+"</th><td><a href='student.php?userID="+user.userID+"'>"+user.firstName+" "+user.lastName+"</a></td><td><a href='school.php?schoolName="+user.schoolName+"'>"+user.schoolName+"</a></td><td><a class='matchDrop' title='"+Math.round(parseInt(score)+curve)+"' userID='"+user.userID+"' href='#'>"+score+"</a></td></tr></tbody>");
 			}
 		},
 		toggleDropdown: function(event) {
@@ -120,9 +120,11 @@ $(function() {
 				console.log(user)
 				for(var a = 0; a < this.submissions.length; a++) {
 					if(this.submissions[a].user.userID == user.userID) {
-						console.log(user.userID)
-						if(this.dropdowns[a].games == null) this.dropdowns[a].setGames(getLatestGamesForUser(user.userID));
-						this.dropdowns[a].toggle();
+						if(this.dropdowns[a].games == null) {
+							$('<div id="overlay"><img id="loading" src="http://bit.ly/pMtW1K"></div>').appendTo('body');
+							this.dropdowns[a].setGames(getLatestGamesForUser(user.userID));
+							$('#overlay').remove();
+						} this.dropdowns[a].toggle();
 						break;
 					}
 				}
